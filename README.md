@@ -187,10 +187,6 @@ A: `go mod tidy`を実行してください
 
 MIT License - 自由に学習・改変してください
 
-## 著者
-
-あなたの名前 ([@yourusername](https://github.com/yourusername))
-
 ---
 
 Happy Coding! 🎉 質問があれば、Issueでお気軽にどうぞ！
