@@ -1,5 +1,5 @@
 module holidays
 
-go 1.24.5
+go 1.23
 
 require golang.org/x/text v0.30.0 // indirect
