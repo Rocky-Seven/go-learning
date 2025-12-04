@@ -1,0 +1,268 @@
+# 02. 変数と型（Variables and Types）
+
+このディレクトリでは、Go言語の変数宣言とデータ型について学習します。
+
+## 📖 対応するブログ記事
+
+**「Go言語入門：はじめの一歩から学ぶ基礎文法」**  
+🔗 [https://my-studies.org/introduction-to-go-language-learn-basic-grammar-from-beginning/](https://my-studies.org/introduction-to-go-language-learn-basic-grammar-from-beginning/)
+
+この記事では、以下の内容を丁寧に解説しています：
+- パッケージの概念
+- 変数宣言の方法（`var`と`:=`）
+- 基本的なデータ型
+- `fmt.Println`での出力
+
+## 🎯 学習内容
+
+### 1. 変数宣言の3つの方法
+
+#### var による宣言
+```go
+var name string = "太郎"
+var age int = 25
+```
+
+#### 型推論
+```go
+var city = "三重"  // stringと推論される
+```
+
+#### 短縮宣言（:=）
+```go
+name := "太郎"
+age := 25
+```
+
+### 2. 基本的なデータ型
+
+- **int**: 整数
+- **string**: 文字列
+- **bool**: 真偽値（true/false）
+- **float64**: 浮動小数点数（小数）
+
+### 3. 変数の使い分け
+
+| 宣言方法 | 使うべき場面 |
+|---------|------------|
+| `var` | パッケージレベルの変数、初期値なし、型を明示したい場合 |
+| `:=` | 関数内での変数宣言（最も一般的） |
+
+## 💻 実行方法
+
+```bash
+# このディレクトリに移動
+cd basics/02-variables-and-types
+
+# プログラムを実行
+go run main.go
+```
+
+## 📝 コードのポイント
+
+### varと:=の違い
+
+```go
+// var: 関数の外でも使える
+var globalVar = "グローバル変数"
+
+func main() {
+    // := は関数内でのみ使える
+    localVar := "ローカル変数"
+    
+    // var は初期値なしでも宣言できる
+    var count int  // 0が自動で入る
+    
+    // := は初期値が必須
+    // num :=  // エラー！
+}
+```
+
+### ゼロ値
+
+Goでは、初期値を指定しない変数には「ゼロ値」が自動的に入ります。
+
+```go
+var i int       // 0
+var f float64   // 0.0
+var b bool      // false
+var s string    // ""（空文字列）
+```
+
+### 型の確認
+
+`%T`を使って型を確認できます。
+
+```go
+name := "太郎"
+age := 25
+fmt.Printf("型: %T, %T\n", name, age)
+// 出力: 型: string, int
+```
+
+## ✏️ 演習問題
+
+理解を深めるために、以下の課題に挑戦してみましょう。
+
+### 演習1: 自己紹介プログラム
+以下の情報を変数に格納して表示してください：
+- 名前（string）
+- 年齢（int）
+- 身長（float64）
+- 学生かどうか（bool）
+
+<details>
+<summary>解答例</summary>
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    name := "山田花子"
+    age := 22
+    height := 165.5
+    isStudent := true
+    
+    fmt.Println("名前:", name)
+    fmt.Println("年齢:", age, "歳")
+    fmt.Println("身長:", height, "cm")
+    fmt.Println("学生:", isStudent)
+}
+```
+</details>
+
+### 演習2: 計算プログラム
+2つの数値を変数に格納し、以下を計算して表示してください：
+- 足し算
+- 引き算
+- 掛け算
+- 割り算
+
+<details>
+<summary>ヒント</summary>
+
+```go
+a := 10
+b := 3
+
+sum := a + b
+diff := a - b
+product := a * b
+quotient := float64(a) / float64(b)
+
+fmt.Println("足し算:", sum)
+// 以下同様...
+```
+</details>
+
+### 演習3: 消費税計算
+定数を使って消費税率を定義し、商品価格から税込み価格を計算してください。
+
+<details>
+<summary>ヒント</summary>
+
+```go
+const TaxRate = 0.10  // 10%
+
+price := 1000.0
+taxIncluded := price * (1 + TaxRate)
+
+fmt.Printf("税抜: %.0f円\n", price)
+fmt.Printf("税込: %.0f円\n", taxIncluded)
+```
+</details>
+
+## 🔍 よくあるエラーと解決方法
+
+### エラー1: := を関数外で使用
+
+```go
+// ❌ 誤り
+package main
+name := "太郎"  // エラー！
+
+// ✅ 正しい
+package main
+var name = "太郎"
+```
+
+### エラー2: 型の不一致
+
+```go
+// ❌ 誤り
+var age int = "25"  // エラー：stringをintに代入できない
+
+// ✅ 正しい
+var age int = 25
+```
+
+### エラー3: 未使用の変数
+
+```go
+// ❌ 警告
+func main() {
+    name := "太郎"
+    // nameを使っていない！
+}
+
+// ✅ 正しい
+func main() {
+    name := "太郎"
+    fmt.Println(name)  // 変数を使う
+}
+```
+
+## 💡 重要なポイント
+
+### 1. 変数のスコープ
+
+```go
+var globalVar = "グローバル"  // どこからでもアクセス可能
+
+func main() {
+    localVar := "ローカル"  // main関数内でのみ有効
+    
+    if true {
+        blockVar := "ブロック"  // このif文内でのみ有効
+    }
+    // fmt.Println(blockVar)  // エラー：スコープ外
+}
+```
+
+### 2. 定数は変更できない
+
+```go
+const Pi = 3.14
+// Pi = 3.14159  // エラー：定数は変更できない
+```
+
+### 3. 型は厳密
+
+Goは静的型付け言語なので、型が厳密です。
+
+```go
+var age int = 25
+var ageStr string = "25"
+
+// age == ageStr  // エラー：異なる型同士は比較できない
+```
+
+## 🚀 次のステップ
+
+変数と型を理解したら、次は制御構文について学びましょう。
+
+👉 次のディレクトリ: `basics/03-control-flow/`
+
+## 📚 参考リソース
+
+- [A Tour of Go - Basics](https://go.dev/tour/basics/1)
+- [Effective Go - Variables](https://go.dev/doc/effective_go#variables)
+- [Go by Example - Variables](https://gobyexample.com/variables)
+
+---
+
+🎉 変数と型をマスターすれば、プログラムでデータを自由に扱えるようになります！
+
+質問があれば、リポジトリのIssueでお気軽にどうぞ。
