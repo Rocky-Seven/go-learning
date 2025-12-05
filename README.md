@@ -22,7 +22,7 @@ Go言語の学習用リポジトリへようこそ！
   - `fmt.Println`での出力
 
 #### 第2回：Go言語で条件分岐とループをマスターしよう！制御構文の基礎
-- **記事URL**:2025年12月6日公開予定
+- **記事URL**:[2025年12月6日公開](https://my-studies.org/go-language-learn-basic-grammar-from-beginning02/)
 - **対応ディレクトリ**: `basics/03-control-flow/`
 - **学べる内容**:
   - if文による条件分岐
