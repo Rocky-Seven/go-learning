@@ -13,7 +13,7 @@ Go言語の学習用リポジトリへようこそ！
 ### 公開済みの記事
 
 #### 第1回：Go言語入門「はじめの一歩から学ぶ基礎文法」
-- **記事URL**: [2025年10月19日公開(https://my-studies.org/introduction-to-go-language-learn-basic-grammar-from-beginning/)])
+- **記事URL**: [[2025年10月19日公開](https://my-studies.org/introduction-to-go-language-learn-basic-grammar-from-beginning/)])
 - **対応ディレクトリ**: `basics/02-variables-and-types/`
 - **学べる内容**:
   - パッケージの概念
