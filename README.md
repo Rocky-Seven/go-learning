@@ -6,14 +6,14 @@ Go言語の学習用リポジトリへようこそ！
 
 ## 📚 ブログ記事との連動
 
-このリポジトリは、ブログ記事と連動した実践的な学習環境を提供しています。
+このリポジトリは、ブログ「学びを始めよう」と連動した実践的な学習環境を提供しています。
 
 各記事で解説したコードを実際に動かしながら学習できます。
 
 ### 公開済みの記事
 
 #### 第1回：Go言語入門「はじめの一歩から学ぶ基礎文法」
-- **記事URL**: [https://my-studies.org/introduction-to-go-language-learn-basic-grammar-from-beginning/](https://my-studies.org/introduction-to-go-language-learn-basic-grammar-from-beginning/)
+- **記事URL**: [[2025年10月19日公開](https://my-studies.org/introduction-to-go-language-learn-basic-grammar-from-beginning/)])
 - **対応ディレクトリ**: `basics/02-variables-and-types/`
 - **学べる内容**:
   - パッケージの概念
