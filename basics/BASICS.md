@@ -19,6 +19,7 @@
 - **学べる内容**: パッケージの概念、変数宣言（`var`と`:=`）、基本データ型、`fmt.Println`
 
 #### 📝 第2回：Go言語で条件分岐とループをマスターしよう！制御構文の基礎
+- **記事URL**:[[2025年12月6日公開](https://my-studies.org/go-language-learn-basic-grammar-from-beginning02/)]
 - **対応セクション**: [3. 制御構文](#3-制御構文)
 - **学べる内容**: if文、switch文、for文、break/continue
 
