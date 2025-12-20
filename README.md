@@ -6,14 +6,14 @@ Go言語の学習用リポジトリへようこそ！
 
 ## 📚 ブログ記事との連動
 
-このリポジトリは、ブログ「学びを始めよう」と連動した実践的な学習環境を提供しています。
+このリポジトリは、ブログ記事と連動した実践的な学習環境を提供しています。
 
 各記事で解説したコードを実際に動かしながら学習できます。
 
 ### 公開済みの記事
 
 #### 第1回：Go言語入門「はじめの一歩から学ぶ基礎文法」
-- **記事URL**: [2025年10月19日公開](https://my-studies.org/introduction-to-go-language-learn-basic-grammar-from-beginning/)
+- **記事URL**: [2025.10.19公開](https://my-studies.org/introduction-to-go-language-learn-basic-grammar-from-beginning/)
 - **対応ディレクトリ**: `basics/02-variables-and-types/`
 - **学べる内容**:
   - パッケージの概念
@@ -22,13 +22,22 @@ Go言語の学習用リポジトリへようこそ！
   - `fmt.Println`での出力
 
 #### 第2回：Go言語で条件分岐とループをマスターしよう！制御構文の基礎
-- **記事URL**:[2025年12月6日公開](https://my-studies.org/go-language-learn-basic-grammar-from-beginning02/)
+- **記事URL**: [2025.12.06公開](https://my-studies.org/go-language-learn-basic-grammar-from-beginning02/)
 - **対応ディレクトリ**: `basics/03-control-flow/`
 - **学べる内容**:
   - if文による条件分岐
   - switch文による多分岐
   - for文によるループ
   - break/continueでのループ制御
+
+#### 第3回：Go言語の関数を完全理解！引数・戻り値・エラーハンドリング入門
+- **記事URL**:  [2025.12.20公開](https://my-studies.org/go-language-learn-basic-grammar-from-beginning03/)
+- **対応ディレクトリ**: `basics/04-functions/`
+- **学べる内容**:
+  - 関数の定義と呼び出し
+  - 複数の戻り値（Goの特徴）
+  - エラーハンドリングの基本
+  - 可変長引数と名前付き戻り値
 
 ## 🎯 このリポジトリについて
 
@@ -67,7 +76,7 @@ go-learning/
 │   ├── 01-hello/           # Hello World
 │   ├── 02-variables-and-types/  # 変数と型（第1回記事対応）
 │   ├── 03-control-flow/    # 制御構文（第2回記事対応）
-│   ├── 04-functions/       # 関数
+│   ├── 04-functions/       # 関数（第3回記事対応）
 │   ├── 05-slices-and-maps/ # スライスとマップ
 │   └── BASICS.md           # 基礎編の詳細ガイド
 ├── intermediate/            # 中級編
@@ -88,8 +97,8 @@ go-learning/
 
 - ✅ **Hello World**: 最初のGoプログラム
 - ✅ **変数と型**: データ型、変数宣言、定数（[第1回記事](https://my-studies.org/introduction-to-go-language-learn-basic-grammar-from-beginning/)）
-- ✅ **制御構文**: if, for, switch（第2回記事）
-- **関数**: 関数定義、引数、戻り値
+- ✅ **制御構文**: if, for, switch（[第2回記事](https://my-studies.org/go-language-learn-basic-grammar-from-beginning02/)）
+- ✅ **関数**: 関数定義、引数、戻り値、エラーハンドリング（第3回記事）
 - **配列とスライス**: データ構造の基礎
 - **マップ**: キー・バリュー型のデータ構造
 
