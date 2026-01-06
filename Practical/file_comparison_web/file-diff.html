@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ファイル比較ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .file-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .file-input-wrapper {
+            border: 3px dashed #667eea;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            background: white;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .file-input-wrapper:hover {
+            border-color: #764ba2;
+            background: #f8f9fa;
+        }
+        .file-input-wrapper.dragover {
+            border-color: #764ba2;
+            background: #e7e8ff;
+        }
+        .file-input-wrapper input {
+            display: none;
+        }
+        .file-name {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .options {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .results {
+            padding: 30px;
+        }
+        .summary {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .summary h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .diff-item {
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .diff-header {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .diff-type {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        .diff-type.added {
+            background: #d4edda;
+            color: #155724;
+        }
+        .diff-type.removed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .diff-type.modified {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .diff-content {
+            padding: 15px;
+        }
+        .diff-line {
+            font-family: 'Courier New', monospace;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .diff-line.old {
+            background: #ffe6e6;
+            border-left: 3px solid #dc3545;
+        }
+        .diff-line.new {
+            background: #e6ffe6;
+            border-left: 3px solid #28a745;
+        }
+        .no-diff {
+            text-align: center;
+            padding: 40px;
+            color: #28a745;
+            font-size: 1.2em;
+        }
+        .export-btn {
+            background: #28a745;
+            margin-left: 10px;
+        }
+        @media (max-width: 768px) {
+            .file-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 ファイル比較ツール</h1>
+            <p>TXT・CSVファイルの差分を簡単に確認</p>
+        </div>
+        
+        <div class="controls">
+            <div class="file-inputs">
+                <div class="file-input-wrapper" id="drop1">
+                    <div>📁 ファイル1をドロップ</div>
+                    <div>または</div>
+                    <div style="color: #667eea; text-decoration: underline;">クリックして選択</div>
+                    <div class="file-name" id="filename1"></div>
+                    <input type="file" id="file1" accept=".txt,.csv">
+                </div>
+                <div class="file-input-wrapper" id="drop2">
+                    <div>📁 ファイル2をドロップ</div>
+                    <div>または</div>
+                    <div style="color: #667eea; text-decoration: underline;">クリックして選択</div>
+                    <div class="file-name" id="filename2"></div>
+                    <input type="file" id="file2" accept=".txt,.csv">
+                </div>
+            </div>
+            
+            <div class="options">
+                <div class="option">
+                    <input type="checkbox" id="ignoreCase">
+                    <label for="ignoreCase">大文字小文字を区別しない</label>
+                </div>
+                <div class="option">
+                    <input type="checkbox" id="ignoreSpace">
+                    <label for="ignoreSpace">空白を無視</label>
+                </div>
+            </div>
+            
+            <div>
+                <button class="btn" id="compareBtn" disabled>比較実行</button>
+                <button class="btn export-btn" id="exportBtn" style="display:none;">結果をエクスポート</button>
+            </div>
+        </div>
+        
+        <div class="results" id="results"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script>
+        let file1Content = null;
+        let file2Content = null;
+        let file1Name = '';
+        let file2Name = '';
+        let currentDiffs = [];
+
+        // ファイル選択とドラッグ&ドロップの設定
+        setupFileInput('drop1', 'file1', 'filename1', 1);
+        setupFileInput('drop2', 'file2', 'filename2', 2);
+
+        function setupFileInput(dropId, inputId, nameId, fileNum) {
+            const dropZone = document.getElementById(dropId);
+            const fileInput = document.getElementById(inputId);
+            const fileName = document.getElementById(nameId);
+
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    handleFile(file, fileNum, fileName);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    handleFile(file, fileNum, fileName);
+                }
+            });
+        }
+
+        function handleFile(file, fileNum, nameElement) {
+            const reader = new FileReader();
+            const isCSV = file.name.toLowerCase().endsWith('.csv');
+
+            reader.onload = (e) => {
+                if (fileNum === 1) {
+                    file1Name = file.name;
+                    if (isCSV) {
+                        Papa.parse(e.target.result, {
+                            complete: (results) => {
+                                file1Content = results.data.map(row => row.join(','));
+                                nameElement.textContent = file.name;
+                                checkFilesReady();
+                            }
+                        });
+                    } else {
+                        file1Content = e.target.result.split('\n');
+                        nameElement.textContent = file.name;
+                        checkFilesReady();
+                    }
+                } else {
+                    file2Name = file.name;
+                    if (isCSV) {
+                        Papa.parse(e.target.result, {
+                            complete: (results) => {
+                                file2Content = results.data.map(row => row.join(','));
+                                nameElement.textContent = file.name;
+                                checkFilesReady();
+                            }
+                        });
+                    } else {
+                        file2Content = e.target.result.split('\n');
+                        nameElement.textContent = file.name;
+                        checkFilesReady();
+                    }
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        function checkFilesReady() {
+            const compareBtn = document.getElementById('compareBtn');
+            if (file1Content && file2Content) {
+                compareBtn.disabled = false;
+            }
+        }
+
+        document.getElementById('compareBtn').addEventListener('click', compareFiles);
+
+        function compareFiles() {
+            const ignoreCase = document.getElementById('ignoreCase').checked;
+            const ignoreSpace = document.getElementById('ignoreSpace').checked;
+
+            currentDiffs = [];
+            const maxLen = Math.max(file1Content.length, file2Content.length);
+
+            for (let i = 0; i < maxLen; i++) {
+                const line1 = i < file1Content.length ? file1Content[i] : '';
+                const line2 = i < file2Content.length ? file2Content[i] : '';
+
+                const cmp1 = normalize(line1, ignoreCase, ignoreSpace);
+                const cmp2 = normalize(line2, ignoreCase, ignoreSpace);
+
+                if (cmp1 !== cmp2) {
+                    let diffType = 'modified';
+                    if (line1 === '') diffType = 'added';
+                    else if (line2 === '') diffType = 'removed';
+
+                    currentDiffs.push({
+                        lineNum: i + 1,
+                        type: diffType,
+                        line1: line1,
+                        line2: line2
+                    });
+                }
+            }
+
+            displayResults();
+        }
+
+        function normalize(str, ignoreCase, ignoreSpace) {
+            let result = str;
+            if (ignoreSpace) {
+                result = result.replace(/\s/g, '');
+            }
+            if (ignoreCase) {
+                result = result.toLowerCase();
+            }
+            return result;
+        }
+
+        function displayResults() {
+            const resultsDiv = document.getElementById('results');
+            const exportBtn = document.getElementById('exportBtn');
+
+            if (currentDiffs.length === 0) {
+                resultsDiv.innerHTML = '<div class="no-diff">✅ 差分はありません。ファイルは同一です。</div>';
+                exportBtn.style.display = 'none';
+                return;
+            }
+
+            exportBtn.style.display = 'inline-block';
+
+            let html = `
+                <div class="summary">
+                    <h3>📊 比較結果</h3>
+                    <p><strong>ファイル1:</strong> ${file1Name}</p>
+                    <p><strong>ファイル2:</strong> ${file2Name}</p>
+                    <p><strong>差分数:</strong> ${currentDiffs.length}箇所</p>
+                </div>
+            `;
+
+            currentDiffs.forEach(diff => {
+                const typeLabel = diff.type === 'added' ? '追加' : 
+                                 diff.type === 'removed' ? '削除' : '変更';
+                
+                html += `
+                    <div class="diff-item">
+                        <div class="diff-header">
+                            <span>行 ${diff.lineNum}</span>
+                            <span class="diff-type ${diff.type}">${typeLabel}</span>
+                        </div>
+                        <div class="diff-content">
+                `;
+
+                if (diff.type === 'modified') {
+                    html += `
+                        <div class="diff-line old">− ${escapeHtml(diff.line1)}</div>
+                        <div class="diff-line new">+ ${escapeHtml(diff.line2)}</div>
+                    `;
+                } else if (diff.type === 'removed') {
+                    html += `<div class="diff-line old">− ${escapeHtml(diff.line1)}</div>`;
+                } else {
+                    html += `<div class="diff-line new">+ ${escapeHtml(diff.line2)}</div>`;
+                }
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            let text = `ファイル比較結果\n`;
+            text += `===================\n`;
+            text += `ファイル1: ${file1Name}\n`;
+            text += `ファイル2: ${file2Name}\n`;
+            text += `差分数: ${currentDiffs.length}\n\n`;
+
+            currentDiffs.forEach(diff => {
+                text += `--- 行 ${diff.lineNum} ---\n`;
+                if (diff.type === 'modified') {
+                    text += `[変更前] ${diff.line1}\n`;
+                    text += `[変更後] ${diff.line2}\n`;
+                } else if (diff.type === 'removed') {
+                    text += `[削除] ${diff.line1}\n`;
+                } else {
+                    text += `[追加] ${diff.line2}\n`;
+                }
+                text += '\n';
+            });
+
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'diff_result.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
