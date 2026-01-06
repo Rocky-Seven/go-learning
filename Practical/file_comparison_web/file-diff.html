@@ -169,6 +169,18 @@
             background: #e6ffe6;
             border-left: 3px solid #28a745;
         }
+        .diff-line::before {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .diff-line.old::before {
+            content: '− ';
+            color: #dc3545;
+        }
+        .diff-line.new::before {
+            content: '+ ';
+            color: #28a745;
+        }
         .no-diff {
             text-align: center;
             padding: 40px;
@@ -239,7 +251,6 @@
         let file2Name = '';
         let currentDiffs = [];
 
-        // ファイル選択とドラッグ&ドロップの設定
         setupFileInput('drop1', 'file1', 'filename1', 1);
         setupFileInput('drop2', 'file2', 'filename2', 2);
 
@@ -281,37 +292,29 @@
             const isCSV = file.name.toLowerCase().endsWith('.csv');
 
             reader.onload = (e) => {
+                const content = e.target.result;
+                let lines;
+
+                if (isCSV) {
+                    const parsed = Papa.parse(content, {
+                        skipEmptyLines: false
+                    });
+                    lines = parsed.data.map(row => row.join(','));
+                } else {
+                    lines = content.split(/\r?\n/);
+                }
+
                 if (fileNum === 1) {
                     file1Name = file.name;
-                    if (isCSV) {
-                        Papa.parse(e.target.result, {
-                            complete: (results) => {
-                                file1Content = results.data.map(row => row.join(','));
-                                nameElement.textContent = file.name;
-                                checkFilesReady();
-                            }
-                        });
-                    } else {
-                        file1Content = e.target.result.split('\n');
-                        nameElement.textContent = file.name;
-                        checkFilesReady();
-                    }
+                    file1Content = lines;
+                    nameElement.textContent = file.name;
                 } else {
                     file2Name = file.name;
-                    if (isCSV) {
-                        Papa.parse(e.target.result, {
-                            complete: (results) => {
-                                file2Content = results.data.map(row => row.join(','));
-                                nameElement.textContent = file.name;
-                                checkFilesReady();
-                            }
-                        });
-                    } else {
-                        file2Content = e.target.result.split('\n');
-                        nameElement.textContent = file.name;
-                        checkFilesReady();
-                    }
+                    file2Content = lines;
+                    nameElement.textContent = file.name;
                 }
+                
+                checkFilesReady();
             };
 
             reader.readAsText(file);
@@ -383,8 +386,8 @@
             let html = `
                 <div class="summary">
                     <h3>📊 比較結果</h3>
-                    <p><strong>ファイル1:</strong> ${file1Name}</p>
-                    <p><strong>ファイル2:</strong> ${file2Name}</p>
+                    <p><strong>ファイル1:</strong> ${escapeHtml(file1Name)}</p>
+                    <p><strong>ファイル2:</strong> ${escapeHtml(file2Name)}</p>
                     <p><strong>差分数:</strong> ${currentDiffs.length}箇所</p>
                 </div>
             `;
@@ -404,13 +407,13 @@
 
                 if (diff.type === 'modified') {
                     html += `
-                        <div class="diff-line old">− ${escapeHtml(diff.line1)}</div>
-                        <div class="diff-line new">+ ${escapeHtml(diff.line2)}</div>
+                        <div class="diff-line old">[変更前] ${escapeHtml(diff.line1)}</div>
+                        <div class="diff-line new">[変更後] ${escapeHtml(diff.line2)}</div>
                     `;
                 } else if (diff.type === 'removed') {
-                    html += `<div class="diff-line old">− ${escapeHtml(diff.line1)}</div>`;
+                    html += `<div class="diff-line old">[削除] ${escapeHtml(diff.line1)}</div>`;
                 } else {
-                    html += `<div class="diff-line new">+ ${escapeHtml(diff.line2)}</div>`;
+                    html += `<div class="diff-line new">[追加] ${escapeHtml(diff.line2)}</div>`;
                 }
 
                 html += `
@@ -438,12 +441,12 @@
             currentDiffs.forEach(diff => {
                 text += `--- 行 ${diff.lineNum} ---\n`;
                 if (diff.type === 'modified') {
-                    text += `[変更前] ${diff.line1}\n`;
-                    text += `[変更後] ${diff.line2}\n`;
+                    text += `  [変更前] ${diff.line1}\n`;
+                    text += `  [変更後] ${diff.line2}\n`;
                 } else if (diff.type === 'removed') {
-                    text += `[削除] ${diff.line1}\n`;
+                    text += `  [削除] ${diff.line1}\n`;
                 } else {
-                    text += `[追加] ${diff.line2}\n`;
+                    text += `  [追加] ${diff.line2}\n`;
                 }
                 text += '\n';
             });
