@@ -244,6 +244,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/2.0.0/encoding.min.js"></script>
     <script>
         let file1Content = null;
         let file2Content = null;
@@ -291,8 +292,23 @@
             const reader = new FileReader();
             const isCSV = file.name.toLowerCase().endsWith('.csv');
 
+            // バイナリとして読み込んで文字コードを判定
             reader.onload = (e) => {
-                const content = e.target.result;
+                const arrayBuffer = e.target.result;
+                const uint8Array = new Uint8Array(arrayBuffer);
+                
+                // 文字コード判定
+                const detectedEncoding = Encoding.detect(uint8Array);
+                console.log('検出されたエンコーディング:', detectedEncoding);
+                
+                // UTF-8に変換
+                const unicodeArray = Encoding.convert(uint8Array, {
+                    to: 'UNICODE',
+                    from: detectedEncoding
+                });
+                
+                // 文字列に変換
+                const content = Encoding.codeToString(unicodeArray);
                 let lines;
 
                 if (isCSV) {
@@ -317,7 +333,8 @@
                 checkFilesReady();
             };
 
-            reader.readAsText(file);
+            // ArrayBufferとして読み込む
+            reader.readAsArrayBuffer(file);
         }
 
         function checkFilesReady() {
